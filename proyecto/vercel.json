@@ -1,0 +1,13 @@
+{
+  "version": 2,
+  "projects": [
+    {
+      "name": "almacenes-frontend",
+      "rootDirectory": "frontend"
+    },
+    {
+      "name": "almacenes-backend",
+      "rootDirectory": "backend"
+    }
+  ]
+}
