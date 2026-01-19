@@ -1,39 +1,41 @@
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
-import { Navbar } from '../../components/Navbar';
-import { Button } from '../../components/Button';
-import { Card } from '../../components/Card';
-import { Alert } from '../../components/Alert';
-import { Loading } from '../../components/Loading';
-import { pedidoService, envioService } from '../../services/pedidoService';
-import authService from '../../services/authService';
+import { useState, useEffect } from "react";
+import { useRouter } from "next/router";
+import { Navbar } from "../../components/Navbar";
+import { Button } from "../../components/Button";
+import { Card } from "../../components/Card";
+import { Alert } from "../../components/Alert";
+import { Loading } from "../../components/Loading";
+import { pedidoService, envioService } from "../../services/pedidoService";
+import authService from "../../services/authService";
 
 export default function EnviosDashboard() {
   const router = useRouter();
   const user = authService.getCurrentUser();
   const [pedidosDisponibles, setPedidosDisponibles] = useState([]);
   const [envios, setEnvios] = useState([]);
-  const [selectedPedido, setSelectedPedido] = useState('');
+  const [selectedPedido, setSelectedPedido] = useState("");
   const [loading, setLoading] = useState(true);
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState("");
 
   useEffect(() => {
-    if (!user || user.tipo !== 'envios') {
-      router.push('/login');
+    if (!user || user.tipo !== "envios") {
+      router.push("/login");
       return;
     }
 
     const loadData = async () => {
       try {
         const allPedidos = await pedidoService.getAll();
-        setPedidosDisponibles(allPedidos.filter((p) => p.estado === 'listo_envio'));
+        setPedidosDisponibles(
+          allPedidos.filter((p) => p.estado === "listo_envio"),
+        );
 
         const allEnvios = await envioService.getAll();
         setEnvios(allEnvios);
 
         setLoading(false);
       } catch (error) {
-        console.error('Error cargando datos:', error);
+        console.error("Error cargando datos:", error);
         setLoading(false);
       }
     };
@@ -43,17 +45,19 @@ export default function EnviosDashboard() {
 
   const handleCreateEnvio = async () => {
     if (!selectedPedido) {
-      setMessage('Por favor selecciona un pedido');
+      setMessage("Por favor selecciona un pedido");
       return;
     }
 
     try {
       await envioService.create({ pedidoId: selectedPedido });
-      setMessage('Envío creado exitosamente');
-      setSelectedPedido('');
+      setMessage("Envío creado exitosamente");
+      setSelectedPedido("");
 
       const allPedidos = await pedidoService.getAll();
-      setPedidosDisponibles(allPedidos.filter((p) => p.estado === 'listo_envio'));
+      setPedidosDisponibles(
+        allPedidos.filter((p) => p.estado === "listo_envio"),
+      );
 
       const allEnvios = await envioService.getAll();
       setEnvios(allEnvios);
@@ -65,8 +69,12 @@ export default function EnviosDashboard() {
   const handleUpdateEnvioStatus = async (envioId, nuevoEstado) => {
     try {
       await envioService.updateStatus(envioId, nuevoEstado);
-      setEnvios(envios.map((e) => (e.id === envioId ? { ...e, estado: nuevoEstado } : e)));
-      setMessage('Estado del envío actualizado');
+      setEnvios(
+        envios.map((e) =>
+          e.id === envioId ? { ...e, estado: nuevoEstado } : e,
+        ),
+      );
+      setMessage("Estado del envío actualizado");
     } catch (error) {
       setMessage(`Error: ${error.message}`);
     }
@@ -81,7 +89,7 @@ export default function EnviosDashboard() {
         <h1 className="text-3xl font-bold mb-8">Gestión de Envíos</h1>
 
         {message && (
-          <Alert type="info" message={message} onClose={() => setMessage('')} />
+          <Alert type="info" message={message} onClose={() => setMessage("")} />
         )}
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -99,7 +107,8 @@ export default function EnviosDashboard() {
                 <option value="">-- Selecciona un pedido --</option>
                 {pedidosDisponibles.map((pedido) => (
                   <option key={pedido.id} value={pedido.id}>
-                    {pedido.numero} - ${pedido.total.toFixed(2)} - {pedido.ciudad}
+                    {pedido.numero} - ${pedido.total.toFixed(2)} -{" "}
+                    {pedido.ciudad}
                   </option>
                 ))}
               </select>
@@ -136,7 +145,9 @@ export default function EnviosDashboard() {
               <tbody>
                 {envios.map((envio) => (
                   <tr key={envio.id} className="border-b">
-                    <td className="font-mono text-xs">{envio.numeroSeguimiento}</td>
+                    <td className="font-mono text-xs">
+                      {envio.numeroSeguimiento}
+                    </td>
                     <td>{envio.Pedido?.numero}</td>
                     <td>{envio.Pedido?.ciudad}</td>
                     <td>

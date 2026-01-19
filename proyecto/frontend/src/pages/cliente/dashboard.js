@@ -1,14 +1,17 @@
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
-import { Navbar } from '../../components/Navbar';
-import { Input } from '../../components/Input';
-import { Button } from '../../components/Button';
-import { Card } from '../../components/Card';
-import { Alert } from '../../components/Alert';
-import { Loading } from '../../components/Loading';
-import { depositoService, productoService } from '../../services/depositoService';
-import { pedidoService } from '../../services/pedidoService';
-import authService from '../../services/authService';
+import { useState, useEffect } from "react";
+import { useRouter } from "next/router";
+import { Navbar } from "../../components/Navbar";
+import { Input } from "../../components/Input";
+import { Button } from "../../components/Button";
+import { Card } from "../../components/Card";
+import { Alert } from "../../components/Alert";
+import { Loading } from "../../components/Loading";
+import {
+  depositoService,
+  productoService,
+} from "../../services/depositoService";
+import { pedidoService } from "../../services/pedidoService";
+import authService from "../../services/authService";
 
 export default function ClienteDashboard() {
   const router = useRouter();
@@ -17,14 +20,14 @@ export default function ClienteDashboard() {
   const [productos, setProductos] = useState([]);
   const [selectedDeposito, setSelectedDeposito] = useState(null);
   const [cart, setCart] = useState([]);
-  const [direccion, setDireccion] = useState('');
-  const [ciudad, setCiudad] = useState('');
+  const [direccion, setDireccion] = useState("");
+  const [ciudad, setCiudad] = useState("");
   const [loading, setLoading] = useState(true);
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState("");
 
   useEffect(() => {
-    if (!user || user.tipo !== 'cliente') {
-      router.push('/login');
+    if (!user || user.tipo !== "cliente") {
+      router.push("/login");
       return;
     }
 
@@ -34,7 +37,7 @@ export default function ClienteDashboard() {
         setDepositos(data);
         setLoading(false);
       } catch (error) {
-        console.error('Error cargando depósitos:', error);
+        console.error("Error cargando depósitos:", error);
         setLoading(false);
       }
     };
@@ -48,16 +51,20 @@ export default function ClienteDashboard() {
       const data = await productoService.getByDeposito(depositoId);
       setProductos(data);
     } catch (error) {
-      console.error('Error cargando productos:', error);
+      console.error("Error cargando productos:", error);
     }
   };
 
   const addToCart = (producto) => {
     const exists = cart.find((item) => item.id === producto.id);
     if (exists) {
-      setCart(cart.map((item) =>
-        item.id === producto.id ? { ...item, cantidad: item.cantidad + 1 } : item
-      ));
+      setCart(
+        cart.map((item) =>
+          item.id === producto.id
+            ? { ...item, cantidad: item.cantidad + 1 }
+            : item,
+        ),
+      );
     } else {
       setCart([...cart, { ...producto, cantidad: 1 }]);
     }
@@ -71,37 +78,39 @@ export default function ClienteDashboard() {
     if (cantidad <= 0) {
       removeFromCart(productoId);
     } else {
-      setCart(cart.map((item) =>
-        item.id === productoId ? { ...item, cantidad } : item
-      ));
+      setCart(
+        cart.map((item) =>
+          item.id === productoId ? { ...item, cantidad } : item,
+        ),
+      );
     }
   };
 
   const handleCheckout = async () => {
     if (cart.length === 0 || !selectedDeposito || !direccion || !ciudad) {
-      setMessage('Por favor completa todos los campos');
+      setMessage("Por favor completa todos los campos");
       return;
     }
 
     try {
       const items = cart.map((item) => ({
         productoId: item.id,
-        cantidad: item.cantidad
+        cantidad: item.cantidad,
       }));
 
       await pedidoService.create({
         depositoId: selectedDeposito,
         items,
         direccionEntrega: direccion,
-        ciudad
+        ciudad,
       });
 
-      setMessage('Pedido creado exitosamente!');
+      setMessage("Pedido creado exitosamente!");
       setCart([]);
-      setDireccion('');
-      setCiudad('');
+      setDireccion("");
+      setCiudad("");
       setSelectedDeposito(null);
-      setTimeout(() => router.push('/'), 2000);
+      setTimeout(() => router.push("/"), 2000);
     } catch (error) {
       setMessage(`Error: ${error.response?.data?.error || error.message}`);
     }
@@ -109,7 +118,10 @@ export default function ClienteDashboard() {
 
   if (loading) return <Loading />;
 
-  const total = cart.reduce((sum, item) => sum + item.precio * item.cantidad, 0);
+  const total = cart.reduce(
+    (sum, item) => sum + item.precio * item.cantidad,
+    0,
+  );
 
   return (
     <div>
@@ -119,9 +131,9 @@ export default function ClienteDashboard() {
 
         {message && (
           <Alert
-            type={message.includes('exitosamente') ? 'success' : 'error'}
+            type={message.includes("exitosamente") ? "success" : "error"}
             message={message}
-            onClose={() => setMessage('')}
+            onClose={() => setMessage("")}
           />
         )}
 
@@ -133,11 +145,13 @@ export default function ClienteDashboard() {
                 {depositos.map((deposito) => (
                   <Button
                     key={deposito.id}
-                    variant={selectedDeposito === deposito.id ? 'success' : 'secondary'}
+                    variant={
+                      selectedDeposito === deposito.id ? "success" : "secondary"
+                    }
                     onClick={() => handleDepositoSelect(deposito.id)}
                     className="text-left"
                   >
-                    {deposito.nombre || 'Depósito'}
+                    {deposito.nombre || "Depósito"}
                   </Button>
                 ))}
               </div>
@@ -145,7 +159,9 @@ export default function ClienteDashboard() {
 
             {selectedDeposito && (
               <Card>
-                <h2 className="text-xl font-bold mb-4">Productos Disponibles</h2>
+                <h2 className="text-xl font-bold mb-4">
+                  Productos Disponibles
+                </h2>
                 <div className="space-y-3">
                   {productos.map((producto) => (
                     <div
@@ -154,8 +170,12 @@ export default function ClienteDashboard() {
                     >
                       <div>
                         <h3 className="font-semibold">{producto.nombre}</h3>
-                        <p className="text-gray-600">${producto.precio.toFixed(2)}</p>
-                        <p className="text-sm text-gray-500">Stock: {producto.stock}</p>
+                        <p className="text-gray-600">
+                          ${producto.precio.toFixed(2)}
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          Stock: {producto.stock}
+                        </p>
                       </div>
                       <Button onClick={() => addToCart(producto)} size="sm">
                         Agregar
@@ -181,7 +201,9 @@ export default function ClienteDashboard() {
                           <Button
                             size="sm"
                             variant="secondary"
-                            onClick={() => updateQuantity(item.id, item.cantidad - 1)}
+                            onClick={() =>
+                              updateQuantity(item.id, item.cantidad - 1)
+                            }
                           >
                             -
                           </Button>
@@ -196,7 +218,9 @@ export default function ClienteDashboard() {
                           <Button
                             size="sm"
                             variant="secondary"
-                            onClick={() => updateQuantity(item.id, item.cantidad + 1)}
+                            onClick={() =>
+                              updateQuantity(item.id, item.cantidad + 1)
+                            }
                           >
                             +
                           </Button>
@@ -228,7 +252,9 @@ export default function ClienteDashboard() {
                     onChange={(e) => setCiudad(e.target.value)}
                   />
 
-                  <p className="font-bold text-lg mb-4">Total: ${total.toFixed(2)}</p>
+                  <p className="font-bold text-lg mb-4">
+                    Total: ${total.toFixed(2)}
+                  </p>
                   <Button className="w-full" onClick={handleCheckout}>
                     Confirmar Pedido
                   </Button>

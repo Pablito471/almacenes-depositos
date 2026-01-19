@@ -1,26 +1,26 @@
-import { useState } from 'react';
-import { useRouter } from 'next/router';
-import { Navbar } from '../components/Navbar';
-import { Input } from '../components/Input';
-import { Button } from '../components/Button';
-import { Alert } from '../components/Alert';
-import { Card } from '../components/Card';
-import { useForm } from '../hooks/useForm';
-import { useAuth } from '../hooks/useAuth';
+import { useState } from "react";
+import { useRouter } from "next/router";
+import { Navbar } from "../components/Navbar";
+import { Input } from "../components/Input";
+import { Button } from "../components/Button";
+import { Alert } from "../components/Alert";
+import { Card } from "../components/Card";
+import { useForm } from "../hooks/useForm";
+import { useAuth } from "../hooks/useAuth";
 
 export default function Login() {
   const router = useRouter();
   const { login, loading, error } = useAuth();
-  const [successMessage, setSuccessMessage] = useState('');
-  const form = useForm({ email: '', password: '' }, handleSubmit);
+  const [successMessage, setSuccessMessage] = useState("");
+  const form = useForm({ email: "", password: "" }, handleSubmit);
 
   async function handleSubmit(values) {
     try {
       await login(values.email, values.password);
-      setSuccessMessage('Inicio de sesión exitoso');
-      setTimeout(() => router.push('/'), 1000);
+      setSuccessMessage("Inicio de sesión exitoso");
+      setTimeout(() => router.push("/"), 1000);
     } catch (err) {
-      console.error('Error al iniciar sesión:', err);
+      console.error("Error al iniciar sesión:", err);
     }
   }
 
@@ -54,17 +54,13 @@ export default function Login() {
               onChange={form.handleChange}
             />
 
-            <Button
-              type="submit"
-              className="w-full"
-              disabled={loading}
-            >
-              {loading ? 'Cargando...' : 'Iniciar Sesión'}
+            <Button type="submit" className="w-full" disabled={loading}>
+              {loading ? "Cargando..." : "Iniciar Sesión"}
             </Button>
           </form>
 
           <p className="text-center mt-4 text-gray-600">
-            ¿No tienes cuenta?{' '}
+            ¿No tienes cuenta?{" "}
             <a href="/register" className="text-blue-600 hover:underline">
               Regístrate aquí
             </a>

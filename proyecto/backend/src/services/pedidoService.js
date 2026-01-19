@@ -2,6 +2,7 @@ const Pedido = require("../models/Pedido");
 const ItemPedido = require("../models/ItemPedido");
 const Producto = require("../models/Producto");
 const Usuario = require("../models/Usuario");
+const Deposito = require("../models/Deposito");
 
 const generatePedidoNumber = () => {
   return `PED-${Date.now()}`;

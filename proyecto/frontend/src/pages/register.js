@@ -1,38 +1,38 @@
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
-import { Navbar } from '../components/Navbar';
-import { Input } from '../components/Input';
-import { Button } from '../components/Button';
-import { Alert } from '../components/Alert';
-import { Card } from '../components/Card';
-import { useForm } from '../hooks/useForm';
-import { useAuth } from '../hooks/useAuth';
+import { useState, useEffect } from "react";
+import { useRouter } from "next/router";
+import { Navbar } from "../components/Navbar";
+import { Input } from "../components/Input";
+import { Button } from "../components/Button";
+import { Alert } from "../components/Alert";
+import { Card } from "../components/Card";
+import { useForm } from "../hooks/useForm";
+import { useAuth } from "../hooks/useAuth";
 
 export default function Register() {
   const router = useRouter();
   const { tipo } = router.query;
   const { register, loading, error } = useAuth();
-  const [successMessage, setSuccessMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState("");
 
   const initialValues = {
-    email: '',
-    password: '',
-    confirmPassword: '',
-    nombre: '',
-    tipo: tipo || 'cliente',
+    email: "",
+    password: "",
+    confirmPassword: "",
+    nombre: "",
+    tipo: tipo || "cliente",
     deposito: {
-      nombre: '',
-      ubicacion: '',
-      ciudad: '',
-      telefono: ''
-    }
+      nombre: "",
+      ubicacion: "",
+      ciudad: "",
+      telefono: "",
+    },
   };
 
   const form = useForm(initialValues, handleSubmit);
 
   async function handleSubmit(values) {
     if (values.password !== values.confirmPassword) {
-      form.setErrors({ password: 'Las contraseñas no coinciden' });
+      form.setErrors({ password: "Las contraseñas no coinciden" });
       return;
     }
 
@@ -41,15 +41,15 @@ export default function Register() {
         email: values.email,
         password: values.password,
         nombre: values.nombre,
-        tipo: tipo || 'cliente',
-        ...(tipo === 'deposito' && { deposito: values.deposito })
+        tipo: tipo || "cliente",
+        ...(tipo === "deposito" && { deposito: values.deposito }),
       };
 
       await register(userData);
-      setSuccessMessage('Registro exitoso. Redirigiendo...');
-      setTimeout(() => router.push('/login'), 1500);
+      setSuccessMessage("Registro exitoso. Redirigiendo...");
+      setTimeout(() => router.push("/login"), 1500);
     } catch (err) {
-      console.error('Error al registrarse:', err);
+      console.error("Error al registrarse:", err);
     }
   }
 
@@ -57,7 +57,7 @@ export default function Register() {
     if (tipo) {
       form.setValues({
         ...form.values,
-        tipo
+        tipo,
       });
     }
   }, [tipo]);
@@ -67,7 +67,9 @@ export default function Register() {
       <Navbar />
       <div className="max-w-2xl mx-auto px-4 py-12">
         <Card>
-          <h1 className="text-2xl font-bold mb-6">Registrarse como {tipo || 'Cliente'}</h1>
+          <h1 className="text-2xl font-bold mb-6">
+            Registrarse como {tipo || "Cliente"}
+          </h1>
 
           {error && <Alert type="error" message={error} />}
           {successMessage && <Alert type="success" message={successMessage} />}
@@ -110,7 +112,7 @@ export default function Register() {
               error={form.errors.password}
             />
 
-            {tipo === 'deposito' && (
+            {tipo === "deposito" && (
               <div className="bg-gray-100 p-4 rounded-lg mb-4">
                 <h3 className="font-semibold mb-3">Información del Depósito</h3>
                 <Input
@@ -120,7 +122,10 @@ export default function Register() {
                   name="deposito.nombre"
                   value={form.values.deposito.nombre}
                   onChange={(e) => {
-                    const deposito = { ...form.values.deposito, nombre: e.target.value };
+                    const deposito = {
+                      ...form.values.deposito,
+                      nombre: e.target.value,
+                    };
                     form.setValues({ ...form.values, deposito });
                   }}
                 />
@@ -132,7 +137,10 @@ export default function Register() {
                   name="deposito.ubicacion"
                   value={form.values.deposito.ubicacion}
                   onChange={(e) => {
-                    const deposito = { ...form.values.deposito, ubicacion: e.target.value };
+                    const deposito = {
+                      ...form.values.deposito,
+                      ubicacion: e.target.value,
+                    };
                     form.setValues({ ...form.values, deposito });
                   }}
                 />
@@ -144,7 +152,10 @@ export default function Register() {
                   name="deposito.ciudad"
                   value={form.values.deposito.ciudad}
                   onChange={(e) => {
-                    const deposito = { ...form.values.deposito, ciudad: e.target.value };
+                    const deposito = {
+                      ...form.values.deposito,
+                      ciudad: e.target.value,
+                    };
                     form.setValues({ ...form.values, deposito });
                   }}
                 />
@@ -156,7 +167,10 @@ export default function Register() {
                   name="deposito.telefono"
                   value={form.values.deposito.telefono}
                   onChange={(e) => {
-                    const deposito = { ...form.values.deposito, telefono: e.target.value };
+                    const deposito = {
+                      ...form.values.deposito,
+                      telefono: e.target.value,
+                    };
                     form.setValues({ ...form.values, deposito });
                   }}
                 />
@@ -164,12 +178,12 @@ export default function Register() {
             )}
 
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? 'Registrando...' : 'Registrarse'}
+              {loading ? "Registrando..." : "Registrarse"}
             </Button>
           </form>
 
           <p className="text-center mt-4 text-gray-600">
-            ¿Ya tienes cuenta?{' '}
+            ¿Ya tienes cuenta?{" "}
             <a href="/login" className="text-blue-600 hover:underline">
               Inicia sesión aquí
             </a>

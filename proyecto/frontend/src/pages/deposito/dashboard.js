@@ -1,34 +1,37 @@
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
-import { Navbar } from '../../components/Navbar';
-import { Input } from '../../components/Input';
-import { Button } from '../../components/Button';
-import { Card } from '../../components/Card';
-import { Alert } from '../../components/Alert';
-import { Loading } from '../../components/Loading';
-import { productoService, depositoService } from '../../services/depositoService';
-import { pedidoService } from '../../services/pedidoService';
-import authService from '../../services/authService';
+import { useState, useEffect } from "react";
+import { useRouter } from "next/router";
+import { Navbar } from "../../components/Navbar";
+import { Input } from "../../components/Input";
+import { Button } from "../../components/Button";
+import { Card } from "../../components/Card";
+import { Alert } from "../../components/Alert";
+import { Loading } from "../../components/Loading";
+import {
+  productoService,
+  depositoService,
+} from "../../services/depositoService";
+import { pedidoService } from "../../services/pedidoService";
+import authService from "../../services/authService";
 
 export default function DepositoDashboard() {
   const router = useRouter();
   const user = authService.getCurrentUser();
   const [deposito, setDeposito] = useState(null);
-  const [tab, setTab] = useState('productos');
+  const [tab, setTab] = useState("productos");
   const [productos, setProductos] = useState([]);
   const [pedidos, setPedidos] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState("");
   const [formData, setFormData] = useState({
-    nombre: '',
-    descripcion: '',
-    precio: '',
-    stock: ''
+    nombre: "",
+    descripcion: "",
+    precio: "",
+    stock: "",
   });
 
   useEffect(() => {
-    if (!user || user.tipo !== 'deposito') {
-      router.push('/login');
+    if (!user || user.tipo !== "deposito") {
+      router.push("/login");
       return;
     }
 
@@ -43,7 +46,7 @@ export default function DepositoDashboard() {
         }
         setLoading(false);
       } catch (error) {
-        console.error('Error cargando datos:', error);
+        console.error("Error cargando datos:", error);
         setLoading(false);
       }
     };
@@ -52,13 +55,13 @@ export default function DepositoDashboard() {
   }, [user, router]);
 
   useEffect(() => {
-    if (tab === 'pedidos' && deposito) {
+    if (tab === "pedidos" && deposito) {
       const loadPedidos = async () => {
         try {
           const allPedidos = await pedidoService.getAll();
           setPedidos(allPedidos.filter((p) => p.depositoId === deposito.id));
         } catch (error) {
-          console.error('Error cargando pedidos:', error);
+          console.error("Error cargando pedidos:", error);
         }
       };
       loadPedidos();
@@ -72,10 +75,10 @@ export default function DepositoDashboard() {
         nombre: formData.nombre,
         descripcion: formData.descripcion,
         precio: parseFloat(formData.precio),
-        stock: parseInt(formData.stock)
+        stock: parseInt(formData.stock),
       });
-      setMessage('Producto agregado exitosamente');
-      setFormData({ nombre: '', descripcion: '', precio: '', stock: '' });
+      setMessage("Producto agregado exitosamente");
+      setFormData({ nombre: "", descripcion: "", precio: "", stock: "" });
       const prods = await productoService.getByDeposito(deposito.id);
       setProductos(prods);
     } catch (error) {
@@ -87,7 +90,7 @@ export default function DepositoDashboard() {
     try {
       await productoService.delete(id);
       setProductos(productos.filter((p) => p.id !== id));
-      setMessage('Producto eliminado');
+      setMessage("Producto eliminado");
     } catch (error) {
       setMessage(`Error: ${error.message}`);
     }
@@ -97,9 +100,11 @@ export default function DepositoDashboard() {
     try {
       await pedidoService.updateStatus(pedidoId, nuevoEstado);
       setPedidos(
-        pedidos.map((p) => (p.id === pedidoId ? { ...p, estado: nuevoEstado } : p))
+        pedidos.map((p) =>
+          p.id === pedidoId ? { ...p, estado: nuevoEstado } : p,
+        ),
       );
-      setMessage('Pedido actualizado');
+      setMessage("Pedido actualizado");
     } catch (error) {
       setMessage(`Error: ${error.message}`);
     }
@@ -114,7 +119,7 @@ export default function DepositoDashboard() {
         <h1 className="text-3xl font-bold mb-8">Gestión de Depósito</h1>
 
         {message && (
-          <Alert type="info" message={message} onClose={() => setMessage('')} />
+          <Alert type="info" message={message} onClose={() => setMessage("")} />
         )}
 
         {deposito && (
@@ -127,20 +132,20 @@ export default function DepositoDashboard() {
 
         <div className="flex gap-4 mb-6">
           <Button
-            variant={tab === 'productos' ? 'primary' : 'secondary'}
-            onClick={() => setTab('productos')}
+            variant={tab === "productos" ? "primary" : "secondary"}
+            onClick={() => setTab("productos")}
           >
             Productos
           </Button>
           <Button
-            variant={tab === 'pedidos' ? 'primary' : 'secondary'}
-            onClick={() => setTab('pedidos')}
+            variant={tab === "pedidos" ? "primary" : "secondary"}
+            onClick={() => setTab("pedidos")}
           >
             Pedidos
           </Button>
         </div>
 
-        {tab === 'productos' && (
+        {tab === "productos" && (
           <div>
             <Card className="mb-6">
               <h2 className="text-xl font-bold mb-4">Agregar Nuevo Producto</h2>
@@ -167,14 +172,18 @@ export default function DepositoDashboard() {
                   placeholder="0.00"
                   step="0.01"
                   value={formData.precio}
-                  onChange={(e) => setFormData({ ...formData, precio: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, precio: e.target.value })
+                  }
                 />
                 <Input
                   label="Stock"
                   type="number"
                   placeholder="0"
                   value={formData.stock}
-                  onChange={(e) => setFormData({ ...formData, stock: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, stock: e.target.value })
+                  }
                 />
                 <Button type="submit" className="w-full">
                   Agregar Producto
@@ -216,7 +225,7 @@ export default function DepositoDashboard() {
           </div>
         )}
 
-        {tab === 'pedidos' && (
+        {tab === "pedidos" && (
           <Card>
             <h2 className="text-xl font-bold mb-4">Pedidos Asignados</h2>
             <table className="w-full text-left text-sm">
@@ -233,7 +242,7 @@ export default function DepositoDashboard() {
                 {pedidos.map((pedido) => (
                   <tr key={pedido.id} className="border-b">
                     <td>{pedido.numero}</td>
-                    <td>{pedido.cliente?.nombre || 'N/A'}</td>
+                    <td>{pedido.cliente?.nombre || "N/A"}</td>
                     <td>${pedido.total.toFixed(2)}</td>
                     <td>
                       <select
