@@ -1,8 +1,8 @@
 import { useRouter } from "next/router";
-import { Navbar } from "../components/Navbar";
-import authService from "../services/authService";
-import { Button } from "../components/Button";
-import { Card } from "../components/Card";
+import { Navbar } from "../components/Navbar.jsx";
+import authService from "../services/authService.jsx";
+import { Button } from "../components/Button.jsx";
+import { Card } from "../components/Card.jsx";
 
 export default function Home() {
   const router = useRouter();

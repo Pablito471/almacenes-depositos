@@ -1,4 +1,4 @@
-import api from "./api";
+import api from "./api.jsx";
 
 const authService = {
   register: async (data) => {

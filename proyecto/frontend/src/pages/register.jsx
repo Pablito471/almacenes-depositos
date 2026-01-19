@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
-import { Navbar } from "../components/Navbar";
-import { Input } from "../components/Input";
-import { Button } from "../components/Button";
-import { Alert } from "../components/Alert";
-import { Card } from "../components/Card";
-import { useForm } from "../hooks/useForm";
-import { useAuth } from "../hooks/useAuth";
+import { Navbar } from "../components/Navbar.jsx";
+import { Input } from "../components/Input.jsx";
+import { Button } from "../components/Button.jsx";
+import { Alert } from "../components/Alert.jsx";
+import { Card } from "../components/Card.jsx";
+import { useForm } from "../hooks/useForm.jsx";
+import { useAuth } from "../hooks/useAuth.jsx";
 
 export default function Register() {
   const router = useRouter();

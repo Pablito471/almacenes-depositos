@@ -1,6 +1,6 @@
 import { useRouter } from "next/router";
 import authService from "../services/authService";
-import { Button } from "./Button";
+import { Button } from "./Button.jsx";
 
 export const Navbar = () => {
   const router = useRouter();

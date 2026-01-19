@@ -1,4 +1,4 @@
-import api from "./api";
+import api from "./api.jsx";
 
 const pedidoService = {
   create: async (data) => {
