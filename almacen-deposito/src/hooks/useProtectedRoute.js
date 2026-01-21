@@ -9,9 +9,9 @@ export function useProtectedRoute(requiredRole = null) {
   useEffect(() => {
     if (loading) return;
 
-    // Si no hay usuario autenticado, redirigir a login
+    // Si no hay usuario autenticado, redirigir a home (no a login)
     if (!user) {
-      router.push("/pages/auth/login");
+      router.push("/");
       return;
     }
 

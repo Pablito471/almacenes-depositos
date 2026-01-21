@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 
 /**
  * Hook para gestionar filtros de productos
@@ -89,19 +89,19 @@ export function useProductFilters(products = []) {
     return result;
   }, [products, filters]);
 
-  const updateFilter = (key, value) => {
+  const updateFilter = useCallback((key, value) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
-  };
+  }, []);
 
-  const resetFilters = () => {
+  const resetFilters = useCallback(() => {
     setFilters({
       search: "",
       category: "todas",
       sortBy: "nombre",
-      minPrice: priceRange.min,
-      maxPrice: priceRange.max,
+      minPrice: 0,
+      maxPrice: 10000,
     });
-  };
+  }, []);
 
   return {
     filters,

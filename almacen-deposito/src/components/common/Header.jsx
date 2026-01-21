@@ -6,7 +6,7 @@ import { useAlmacenes } from "@/context/AlmacenesContext";
 import { useRouter } from "next/navigation";
 import Button from "./Button";
 import { FiLogOut, FiMenu, FiX, FiMapPin, FiUser } from "react-icons/fi";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function Header() {
   const { user, role, profile, logout } = useAuth();
@@ -19,9 +19,23 @@ export default function Header() {
 
   const almacenActual = obtenerAlmacenActual();
 
+  // Redirigir a home cuando se detecta logout (user === null)
+  useEffect(() => {
+    if (user === null && typeof window !== "undefined") {
+      const currentPath = window.location.pathname;
+      // Solo redirigir si estamos en una ruta protegida
+      if (
+        currentPath.startsWith("/cliente") ||
+        currentPath.startsWith("/deposito") ||
+        currentPath.startsWith("/envios")
+      ) {
+        router.replace("/");
+      }
+    }
+  }, [user, router]);
+
   const handleLogout = () => {
     logout();
-    router.push("/");
   };
 
   const getRoleLabel = () => {

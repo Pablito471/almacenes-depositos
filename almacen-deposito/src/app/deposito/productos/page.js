@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useProtectedRoute } from "@/hooks/useProtectedRoute";
 import { useProductFilters } from "@/hooks/useProductFilters";
@@ -18,16 +19,40 @@ import { FiEdit2, FiSave, FiX, FiPlus } from "react-icons/fi";
 
 export default function DepositoProductosPage() {
   const { loading } = useProtectedRoute("deposito");
-  const [productos, setProductos] = useState([]);
+
+  // Estado derivado para inicialización única
+  const [state, setState] = useState(() => {
+    const productosMock = mockProductos["1"] || [];
+    const initialPrices = {};
+    const initialStocks = {};
+
+    productosMock.forEach((p) => {
+      initialPrices[p.id] = p.precio;
+      initialStocks[p.id] = p.stock;
+    });
+
+    return {
+      productos: productosMock,
+      editingPrices: initialPrices,
+      editingStocks: initialStocks,
+    };
+  });
+
+  const {
+    productos,
+    editingPrices: initialEditingPrices,
+    editingStocks: initialEditingStocks,
+  } = state;
   const [editingId, setEditingId] = useState(null);
-  const [editingPrices, setEditingPrices] = useState({});
-  const [editingStocks, setEditingStocks] = useState({});
+  const [editingPrices, setEditingPrices] = useState(initialEditingPrices);
+  const [editingStocks, setEditingStocks] = useState(initialEditingStocks);
   const [showNewProductForm, setShowNewProductForm] = useState(false);
   const [newProduct, setNewProduct] = useState({
     nombre: "",
     descripcion: "",
     precio: "",
     stock: "",
+    categoria: "",
     imagen: "",
   });
 
@@ -42,18 +67,17 @@ export default function DepositoProductosPage() {
     totalResults,
   } = useProductFilters(productos);
 
-  useEffect(() => {
-    // Para este demo, usamos los productos del depósito 1
-    setProductos(mockProductos["1"] || []);
-    const initialPrices = {};
-    const initialStocks = {};
-    (mockProductos["1"] || []).forEach((p) => {
-      initialPrices[p.id] = p.precio;
-      initialStocks[p.id] = p.stock;
+  // Función para actualizar productos
+  const setProductos = (updater) => {
+    setState((prev) => {
+      const newProductos =
+        typeof updater === "function" ? updater(prev.productos) : updater;
+      return {
+        ...prev,
+        productos: newProductos,
+      };
     });
-    setEditingPrices(initialPrices);
-    setEditingStocks(initialStocks);
-  }, []);
+  };
 
   const handleEditStart = (productoId) => {
     setEditingId(productoId);
@@ -85,11 +109,12 @@ export default function DepositoProductosPage() {
       !newProduct.descripcion ||
       !newProduct.precio ||
       !newProduct.stock ||
+      !newProduct.categoria ||
       !newProduct.imagen
     ) {
       alerts.warning(
         "Campos requeridos",
-        "Completa todos los campos incluyendo la imagen",
+        "Completa todos los campos incluyendo categoría e imagen",
       );
       return;
     }
@@ -101,6 +126,7 @@ export default function DepositoProductosPage() {
       descripcion: newProduct.descripcion,
       precio: parseFloat(newProduct.precio),
       stock: parseInt(newProduct.stock),
+      categoria: newProduct.categoria,
       imagen: newProduct.imagen,
     };
 
@@ -119,6 +145,7 @@ export default function DepositoProductosPage() {
       descripcion: "",
       precio: "",
       stock: "",
+      categoria: "",
       imagen: "",
     });
     setShowNewProductForm(false);
@@ -172,6 +199,25 @@ export default function DepositoProductosPage() {
                 }
               />
 
+              <Select
+                label="Categoría"
+                value={newProduct.categoria}
+                onChange={(e) =>
+                  setNewProduct({ ...newProduct, categoria: e.target.value })
+                }
+                options={[
+                  { value: "", label: "Seleccionar categoría" },
+                  { value: "Computadoras", label: "Computadoras" },
+                  { value: "Periféricos", label: "Periféricos" },
+                  { value: "Monitores", label: "Monitores" },
+                  { value: "Accesorios", label: "Accesorios" },
+                  { value: "Audio", label: "Audio" },
+                  { value: "Cables", label: "Cables" },
+                  { value: "Almacenamiento", label: "Almacenamiento" },
+                  { value: "Componentes", label: "Componentes" },
+                ]}
+              />
+
               <div className="grid grid-cols-2 gap-4">
                 <Input
                   label="Precio (ARS)"
@@ -208,14 +254,11 @@ export default function DepositoProductosPage() {
                 />
                 {newProduct.imagen && (
                   <div className="mt-3 relative w-full h-32 bg-gray-200 rounded-lg overflow-hidden">
-                    <img
+                    <Image
                       src={newProduct.imagen}
                       alt="Preview"
-                      className="w-full h-full object-cover"
-                      onError={(e) => {
-                        e.target.src =
-                          "https://via.placeholder.com/300x200?text=Error";
-                      }}
+                      fill
+                      className="object-cover"
                     />
                   </div>
                 )}
@@ -280,14 +323,11 @@ export default function DepositoProductosPage() {
                 {/* Imagen del Producto */}
                 {producto.imagen && (
                   <div className="relative w-full h-48 mb-4 bg-gray-100 rounded-lg overflow-hidden">
-                    <img
+                    <Image
                       src={producto.imagen}
                       alt={producto.nombre}
-                      className="w-full h-full object-cover"
-                      onError={(e) => {
-                        e.target.src =
-                          "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&q=80";
-                      }}
+                      fill
+                      className="object-cover"
                     />
                   </div>
                 )}
