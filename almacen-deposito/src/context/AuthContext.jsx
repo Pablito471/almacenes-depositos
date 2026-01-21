@@ -10,16 +10,19 @@ export function AuthProvider({ children }) {
       return {
         user: null,
         role: null,
+        profile: null,
         loading: true,
       };
     }
 
     const storedUser = localStorage.getItem("user");
     const storedRole = localStorage.getItem("role");
+    const storedProfile = localStorage.getItem("profile");
 
     return {
       user: storedUser ? JSON.parse(storedUser) : null,
       role: storedRole || null,
+      profile: storedProfile ? JSON.parse(storedProfile) : null,
       loading: false,
     };
   });
@@ -28,20 +31,31 @@ export function AuthProvider({ children }) {
     setAuthState({
       user: userData,
       role: userRole,
+      profile: null,
       loading: false,
     });
     localStorage.setItem("user", JSON.stringify(userData));
     localStorage.setItem("role", userRole);
   };
 
+  const updateProfile = (profileData) => {
+    setAuthState((prev) => ({
+      ...prev,
+      profile: profileData,
+    }));
+    localStorage.setItem("profile", JSON.stringify(profileData));
+  };
+
   const logout = () => {
     setAuthState({
       user: null,
       role: null,
+      profile: null,
       loading: false,
     });
     localStorage.removeItem("user");
     localStorage.removeItem("role");
+    localStorage.removeItem("profile");
   };
 
   return (
@@ -50,8 +64,10 @@ export function AuthProvider({ children }) {
         user: authState.user,
         loading: authState.loading,
         role: authState.role,
+        profile: authState.profile,
         login,
         logout,
+        updateProfile,
       }}
     >
       {children}

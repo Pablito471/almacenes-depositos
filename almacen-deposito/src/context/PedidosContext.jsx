@@ -48,6 +48,12 @@ export function PedidosProvider({ children }) {
       ...pedidoData,
       fecha: new Date().toISOString(),
       estado: "pendiente",
+      historialEstados: [
+        {
+          estado: "pendiente",
+          timestamp: new Date().toISOString(),
+        },
+      ],
     };
     setPedidos((prev) => {
       const nuevosPedidos = [...prev, nuevoPedido];
@@ -62,7 +68,19 @@ export function PedidosProvider({ children }) {
   const actualizarEstadoPedido = (pedidoId, nuevoEstado) => {
     setPedidos((prev) => {
       const nuevosPedidos = prev.map((p) =>
-        p.id === pedidoId ? { ...p, estado: nuevoEstado } : p,
+        p.id === pedidoId
+          ? {
+              ...p,
+              estado: nuevoEstado,
+              historialEstados: [
+                ...(p.historialEstados || []),
+                {
+                  estado: nuevoEstado,
+                  timestamp: new Date().toISOString(),
+                },
+              ],
+            }
+          : p,
       );
       localStorage.setItem("pedidos", JSON.stringify(nuevosPedidos));
       return nuevosPedidos;

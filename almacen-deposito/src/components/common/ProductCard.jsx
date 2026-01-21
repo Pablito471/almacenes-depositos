@@ -3,7 +3,8 @@
 import Card from "./Card";
 import Button from "./Button";
 import { formatters } from "@/utils/formatters";
-import { FiShoppingCart, FiTrash2 } from "react-icons/fi";
+import { FiShoppingCart } from "react-icons/fi";
+import Image from "next/image";
 
 export default function ProductCard({
   producto,
@@ -13,7 +14,22 @@ export default function ProductCard({
   showActions = true,
 }) {
   return (
-    <Card className="flex flex-col h-full hover:shadow-lg transition-shadow">
+    <Card className="flex flex-col h-full hover:shadow-lg transition-shadow overflow-hidden">
+      {/* Imagen del Producto */}
+      {producto.imagen && (
+        <div className="relative w-full h-48 mb-4 bg-gray-100 rounded-lg overflow-hidden">
+          <img
+            src={producto.imagen}
+            alt={producto.nombre}
+            className="w-full h-full object-cover hover:scale-110 transition-transform duration-300"
+            onError={(e) => {
+              e.target.src =
+                "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&q=80";
+            }}
+          />
+        </div>
+      )}
+
       <h3 className="text-lg font-bold text-gray-900 mb-2">
         {producto.nombre}
       </h3>

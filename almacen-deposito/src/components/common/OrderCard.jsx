@@ -11,6 +11,17 @@ export default function OrderCard({
   actionLabel,
   showAction = true,
 }) {
+  const estadosProgreso = [
+    "pendiente",
+    "confirmado",
+    "preparando",
+    "enviando",
+    "entregado",
+  ];
+  const indiceActual = estadosProgreso.indexOf(pedido.estado);
+  const porcentajeProgreso =
+    ((indiceActual + 1) / estadosProgreso.length) * 100;
+
   const getEstadoColor = (estado) => {
     const colors = {
       pendiente: "text-yellow-600 bg-yellow-50",
@@ -21,6 +32,18 @@ export default function OrderCard({
       cancelado: "text-red-600 bg-red-50",
     };
     return colors[estado] || "text-gray-600 bg-gray-50";
+  };
+
+  const getEstadoDescripcion = (estado) => {
+    const descripciones = {
+      pendiente: "Esperando confirmación del almacén",
+      confirmado: "Pedido confirmado",
+      preparando: "El almacén está preparando tu pedido",
+      enviando: "¡Tu pedido está en camino!",
+      entregado: "Pedido entregado",
+      cancelado: "Pedido cancelado",
+    };
+    return descripciones[estado] || estado;
   };
 
   const getEstadoIcon = (estado) => {
@@ -57,6 +80,28 @@ export default function OrderCard({
         </span>
       </div>
 
+      {pedido.estado !== "cancelado" && (
+        <div className="mb-4">
+          <div className="flex justify-between items-center mb-2">
+            <p className="text-xs font-semibold text-gray-700">
+              Estado del envío
+            </p>
+            <p className="text-xs text-gray-500">
+              {porcentajeProgreso.toFixed(0)}%
+            </p>
+          </div>
+          <div className="w-full bg-gray-200 rounded-full h-2 mb-2">
+            <div
+              className="bg-gradient-to-r from-blue-500 to-green-500 h-2 rounded-full transition-all duration-300"
+              style={{ width: `${porcentajeProgreso}%` }}
+            ></div>
+          </div>
+          <p className="text-xs text-gray-600 italic">
+            {getEstadoDescripcion(pedido.estado)}
+          </p>
+        </div>
+      )}
+
       <div className="bg-gray-50 rounded p-4 mb-4">
         <p className="text-sm font-semibold text-gray-700 mb-2">Items:</p>
         {pedido.items.map((item) => (
@@ -78,6 +123,20 @@ export default function OrderCard({
         <p className="text-lg font-bold text-gray-900">
           Total: {formatters.formatCurrency(total)}
         </p>
+
+        {pedido.historialEstados && pedido.historialEstados.length > 1 && (
+          <div className="mt-3 pt-3 border-t">
+            {pedido.estado === "enviando" && (
+              <p className="text-xs text-purple-600 font-semibold">
+                ✓ Salió del almacén el{" "}
+                {formatters.formatDate(
+                  pedido.historialEstados.find((h) => h.estado === "enviando")
+                    ?.timestamp,
+                )}
+              </p>
+            )}
+          </div>
+        )}
       </div>
 
       {showAction && (

@@ -1,29 +1,70 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-import { loginService } from "@/services/authService";
 import { alerts } from "@/utils/alerts";
 import Card from "@/components/common/Card";
 import Button from "@/components/common/Button";
-import Input from "@/components/common/Input";
-import Select from "@/components/common/Select";
+import LoginForm from "@/components/auth/LoginForm";
+import RegisterForm from "@/components/auth/RegisterForm";
 
 const roles = [
-  { id: "cliente", nombre: "Cliente" },
-  { id: "deposito", nombre: "Almacén" },
-  { id: "envios", nombre: "Envíos" },
+  { id: "cliente", nombre: "👥 Cliente", descripcion: "Compra productos" },
+  {
+    id: "deposito",
+    nombre: "📦 Almacén",
+    descripcion: "Gestiona inventario",
+  },
+  {
+    id: "envios",
+    nombre: "🚚 Envíos",
+    descripcion: "Coordina entregas",
+  },
 ];
 
 export default function LoginPage() {
-  const [step, setStep] = useState("role"); // role, login
+  const [step, setStep] = useState("role"); // role, auth
   const [selectedRole, setSelectedRole] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
+  const [authMode, setAuthMode] = useState("login"); // login, register
+  const { login, user, role, loading } = useAuth();
   const router = useRouter();
+
+  // Si el usuario ya está autenticado, redirigir al dashboard
+  useEffect(() => {
+    if (!loading && user && role) {
+      const routes = {
+        cliente: "/cliente/productos",
+        deposito: "/deposito/productos",
+        envios: "/envios/entregas",
+      };
+      if (routes[role]) {
+        router.push(routes[role]);
+      }
+    }
+  }, [user, role, loading, router]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center">
+        <div className="text-white text-center">
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-white mb-4"></div>
+          <p>Cargando...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 flex items-center justify-center">
+        <div className="text-center animate-pulse">
+          <div className="w-16 h-16 bg-gradient-to-r from-purple-300 to-pink-300 rounded-full mx-auto mb-4 animate-bounce-soft"></div>
+          <p className="text-gray-700 font-semibold">Cargando...</p>
+        </div>
+      </div>
+    );
+  }
 
   const handleSelectRole = (e) => {
     setSelectedRole(e.target.value);
@@ -34,78 +75,65 @@ export default function LoginPage() {
       alerts.warning("Selecciona un rol", "Por favor elige un tipo de usuario");
       return;
     }
-    setStep("login");
+    setStep("auth");
   };
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
-
-    if (!email || !password) {
-      alerts.warning(
-        "Campos requeridos",
-        "Por favor completa todos los campos",
-      );
-      return;
-    }
-
-    setLoading(true);
-    alerts.loading("Iniciando sesión...");
-
-    try {
-      const user = await loginService.login(email, password, selectedRole);
-      login(user, selectedRole);
-      alerts.success("Bienvenido", `Sesión iniciada correctamente`);
-
-      // Redirigir según rol
-      const routes = {
-        cliente: "/cliente/productos",
-        deposito: "/deposito/productos",
-        envios: "/envios/entregas",
-      };
-      router.push(routes[selectedRole]);
-    } catch (error) {
-      alerts.error("Error", error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Credenciales de prueba para facilitar login
-  const fillDemoCredentials = () => {
-    const demos = {
-      cliente: { email: "cliente@example.com", password: "cliente123" },
-      deposito: { email: "deposito@example.com", password: "deposito123" },
-      envios: { email: "envios@example.com", password: "envios123" },
+  const handleAuthSuccess = (user) => {
+    login(user, selectedRole);
+    const routes = {
+      cliente: "/cliente/productos",
+      deposito: "/deposito/productos",
+      envios: "/envios/entregas",
     };
-    const demo = demos[selectedRole];
-    setEmail(demo.email);
-    setPassword(demo.password);
+    router.push(routes[selectedRole]);
+  };
+
+  const handleToggleMode = () => {
+    setAuthMode(authMode === "login" ? "register" : "login");
+  };
+
+  const handleBackToRole = () => {
+    setStep("role");
+    setAuthMode("login");
+    setSelectedRole("");
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center px-4 py-8">
-      <Card className="w-full max-w-md">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 flex items-center justify-center px-4 py-8 animate-fade-in-up">
+      <Card className="w-full max-w-md shadow-soft-lg">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2 animate-float">
             📦 AlmacenesHub
           </h1>
-          <p className="text-gray-600">Sistema de Gestión de Pedidos</p>
+          <p className="text-gray-700 font-semibold">
+            Sistema Integral de Gestión de Almacenes
+          </p>
         </div>
 
         {step === "role" ? (
           <>
-            <h2 className="text-xl font-bold text-gray-900 mb-6">
-              ¿Quién eres?
-            </h2>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-2xl font-bold text-gray-900">¿Quién eres?</h2>
+              <button
+                onClick={() => router.push("/")}
+                className="text-gray-500 hover:text-purple-600 hover:scale-125 text-2xl transition-smooth"
+                title="Volver atrás"
+              >
+                ←
+              </button>
+            </div>
+            <p className="text-gray-700 mb-6 font-semibold">
+              Selecciona tu tipo de cuenta para continuar
+            </p>
 
-            <div className="space-y-3 mb-6">
+            <div className="space-y-3 mb-8">
               {roles.map((role) => (
                 <label
                   key={role.id}
-                  className={`flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all ${
+                  className={`flex items-center p-4 border-2 rounded-xl cursor-pointer transition-smooth hover-lift ${
                     selectedRole === role.id
-                      ? "border-blue-600 bg-blue-50"
-                      : "border-gray-200 hover:border-gray-300"
+                      ? "border-purple-400 bg-gradient-to-r from-purple-100 to-pink-100 shadow-lg"
+                      : "border-purple-200 hover:border-purple-300 hover:bg-purple-50"
                   }`}
                 >
                   <input
@@ -114,82 +142,54 @@ export default function LoginPage() {
                     value={role.id}
                     checked={selectedRole === role.id}
                     onChange={handleSelectRole}
-                    className="w-4 h-4 mr-3"
+                    className="w-4 h-4 mr-4 accent-purple-600"
                   />
-                  <span className="font-semibold text-gray-900">
-                    {role.nombre}
-                  </span>
+                  <div className="flex-1">
+                    <p className="font-semibold text-gray-900">{role.nombre}</p>
+                    <p className="text-sm text-gray-600">{role.descripcion}</p>
+                  </div>
                 </label>
               ))}
             </div>
 
             <Button
               variant="primary"
-              className="w-full"
+              className="w-full py-3 text-lg"
               onClick={handleContinue}
             >
-              Continuar
+              Continuar →
             </Button>
           </>
         ) : (
           <>
             <button
-              onClick={() => setStep("role")}
-              className="text-blue-600 hover:text-blue-700 text-sm mb-4 font-semibold"
+              onClick={handleBackToRole}
+              className="text-purple-600 hover:text-purple-800 text-sm mb-6 font-semibold flex items-center gap-1 transition-smooth hover:scale-110"
             >
               ← Cambiar rol
             </button>
 
-            <h2 className="text-xl font-bold text-gray-900 mb-6">
-              Iniciar Sesión
-            </h2>
-
-            <form onSubmit={handleLogin} className="space-y-4">
-              <Input
-                label="Correo Electrónico"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="tu@email.com"
-                disabled={loading}
+            {authMode === "login" ? (
+              <LoginForm
+                selectedRole={selectedRole}
+                onSuccess={handleAuthSuccess}
+                onToggleMode={handleToggleMode}
               />
-
-              <Input
-                label="Contraseña"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
-                disabled={loading}
+            ) : (
+              <RegisterForm
+                selectedRole={selectedRole}
+                onSuccess={handleAuthSuccess}
+                onToggleMode={handleToggleMode}
               />
-
-              <div className="bg-blue-50 border border-blue-200 rounded p-3 text-sm">
-                <p className="font-semibold text-gray-900 mb-2">
-                  Credenciales de Prueba:
-                </p>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={fillDemoCredentials}
-                  className="w-full text-left"
-                  disabled={loading}
-                >
-                  Cargar datos de demo
-                </Button>
-              </div>
-
-              <Button
-                variant="primary"
-                className="w-full"
-                type="submit"
-                disabled={loading}
-              >
-                {loading ? "Iniciando..." : "Iniciar Sesión"}
-              </Button>
-            </form>
+            )}
           </>
         )}
       </Card>
+
+      {/* Footer */}
+      <div className="mt-8 text-center text-gray-700 text-sm font-semibold">
+        <p>© 2026 AlmacenesHub. Todos los derechos reservados.</p>
+      </div>
     </div>
   );
 }
