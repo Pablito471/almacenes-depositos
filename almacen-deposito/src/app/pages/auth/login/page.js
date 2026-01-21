@@ -21,6 +21,11 @@ const roles = [
     nombre: "🚚 Envíos",
     descripcion: "Coordina entregas",
   },
+  {
+    id: "admin",
+    nombre: "⚙️ Administrador",
+    descripcion: "Gestiona todo el sistema",
+  },
 ];
 
 export default function LoginPage() {
@@ -37,6 +42,7 @@ export default function LoginPage() {
         cliente: "/cliente/productos",
         deposito: "/deposito/productos",
         envios: "/envios/entregas",
+        admin: "/admin",
       };
       if (routes[role]) {
         router.push(routes[role]);
@@ -84,6 +90,7 @@ export default function LoginPage() {
       cliente: "/cliente/productos",
       deposito: "/deposito/productos",
       envios: "/envios/entregas",
+      admin: "/admin",
     };
     router.push(routes[selectedRole]);
   };

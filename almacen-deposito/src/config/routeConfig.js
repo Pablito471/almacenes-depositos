@@ -27,6 +27,7 @@ export const ROUTE_CONFIG = {
       "/envios/historial",
       "/envios/perfil",
     ],
+    admin: ["/admin", "/admin/clientes", "/admin/almacenes", "/admin/envios"],
   },
 };
 
@@ -63,6 +64,7 @@ export function getDashboardRoute(role) {
     cliente: "/cliente/productos",
     deposito: "/deposito/productos",
     envios: "/envios/entregas",
+    admin: "/admin",
   };
   return routes[role] || "/";
 }

@@ -3,6 +3,7 @@ import "./globals.css";
 import { AuthProvider } from "@/context/AuthContext";
 import { PedidosProvider } from "@/context/PedidosContext";
 import { AlmacenesProvider } from "@/context/AlmacenesContext";
+import { AdminProvider } from "@/context/AdminContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -27,9 +28,11 @@ export default function RootLayout({ children }) {
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <AuthProvider>
-          <AlmacenesProvider>
-            <PedidosProvider>{children}</PedidosProvider>
-          </AlmacenesProvider>
+          <AdminProvider>
+            <AlmacenesProvider>
+              <PedidosProvider>{children}</PedidosProvider>
+            </AlmacenesProvider>
+          </AdminProvider>
         </AuthProvider>
       </body>
     </html>

@@ -41,6 +41,7 @@ export default function LoginForm({ selectedRole, onSuccess, onToggleMode }) {
       cliente: { email: "cliente@example.com", password: "cliente123" },
       deposito: { email: "deposito@example.com", password: "deposito123" },
       envios: { email: "envios@example.com", password: "envios123" },
+      admin: { email: "admin@example.com", password: "admin123" },
     };
     const demo = demos[selectedRole];
     if (demo) {
@@ -54,6 +55,7 @@ export default function LoginForm({ selectedRole, onSuccess, onToggleMode }) {
       cliente: "Cliente",
       deposito: "Almacén",
       envios: "Personal de Envíos",
+      admin: "Administrador",
     };
     return labels[selectedRole] || selectedRole;
   };

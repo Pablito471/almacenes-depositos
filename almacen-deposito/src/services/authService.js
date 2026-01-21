@@ -31,6 +31,15 @@ const getUsers = () => {
           role: "envios",
         },
       ],
+      admin: [
+        {
+          id: "4",
+          email: "admin@example.com",
+          password: "admin123",
+          nombre: "Administrador Sistema",
+          role: "admin",
+        },
+      ],
     };
   }
 
@@ -65,6 +74,15 @@ const getUsers = () => {
         password: "envios123",
         nombre: "Envíos Rápidos",
         role: "envios",
+      },
+    ],
+    admin: [
+      {
+        id: "4",
+        email: "admin@example.com",
+        password: "admin123",
+        nombre: "Administrador Sistema",
+        role: "admin",
       },
     ],
   };

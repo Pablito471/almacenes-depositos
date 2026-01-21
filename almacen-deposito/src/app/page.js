@@ -69,7 +69,7 @@ export default function Home() {
                 📦 Almacenes
               </h3>
               <p className="text-cyan-600 text-sm mb-4">
-                Gestiona inventario, fija precios y confirma pedidos
+                Descubre nuestras ubicaciones y sus servicios
               </p>
             </div>
 
@@ -90,6 +90,15 @@ export default function Home() {
             className="w-full md:w-64 mx-auto block hover-scale"
           >
             Iniciar Sesión →
+          </Button>
+
+          <Button
+            variant="secondary"
+            size="lg"
+            onClick={() => router.push("/almacenes")}
+            className="w-full md:w-64 mx-auto block hover-scale mt-4"
+          >
+            Ver Nuestros Almacenes →
           </Button>
         </Card>
 
